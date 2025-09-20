@@ -82,4 +82,5 @@ def plot_continents_on_sphere(ax):
                 # Plot the continent outline
                 ax.plot(x, y, z, color='black', linewidth=1)
 plot_continents_on_sphere(ax)
+
 plt.show()
