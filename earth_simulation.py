@@ -34,7 +34,7 @@ for i in range(len(longitude_data)):
 unit_array = np.ones(np.size(longitude_data))
 z_data = np.outer(unit_array, z_data)
 
-ax.plot_wireframe(x_data, y_data, z_data, alpha=0.002, color='gray', rstride=1, cstride=1)
+ax.plot_surface(x_data, y_data, z_data, alpha=0.5, color='blue', rstride=1, cstride=1)
 
 def plot_continents_on_sphere(ax):
     # Use Cartopy's PlateCarree projection for geographic data
@@ -63,7 +63,9 @@ def plot_continents_on_sphere(ax):
             z = np.cos(theta)
             
             # Plot the continent outline
-            ax.plot(x, y, z, color='maroon', linewidth=1)
+            #ax.add_feature(cfeature.OCEAN, facecolor='lightblue', zorder=0)
+            #ax.add_feature(cfeature.LAND, facecolor='lightgreen', zorder=0)
+            ax.plot(x, y, z, color='black', linewidth=1)
         elif geom.geom_type == 'MultiPolygon':
             # Process each Polygon in MultiPolygon
             for poly in geom.geoms:  # Use .geoms to access individual polygons
@@ -78,9 +80,16 @@ def plot_continents_on_sphere(ax):
                 x = np.cos(phi) * np.sin(theta)
                 y = np.sin(phi) * np.sin(theta)
                 z = np.cos(theta)
+                # Create 3D polygon vertices
+                verts = [list(zip(x, y, z))]
+                # Add filled polygon (green land)
+                ax.add_collection3d(plt.Poly3DCollection(verts, facecolor='green', edgecolor='black', alpha=0.7))
                 
                 # Plot the continent outline
+                #ax.add_feature(cfeature.OCEAN, facecolor='lightblue', zorder=0)
+                #ax.add_feature(cfeature.LAND, facecolor='lightgreen', zorder=0)
                 ax.plot(x, y, z, color='black', linewidth=1)
+
 plot_continents_on_sphere(ax)
 
 plt.show()
