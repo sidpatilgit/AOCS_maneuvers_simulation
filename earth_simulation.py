@@ -10,6 +10,8 @@ from mpl_toolkits import mplot3d #for 3D plots
 import math as mt
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
+import random as rd
+from scipy.spatial.transform import Rotation as R
 
 '''User input lat-long''' #18.5246° N, 73.8786° E; 34.0467° N, 118.5464° W
 target_latitude = 34.0467
@@ -17,7 +19,7 @@ target_longitude = -118.5464
 
 '''Plot all points on Earth'''
 ax = plt.figure(figsize=(10, 10)).add_subplot(111, projection="3d")
-radius_earth = 10.0
+radius_earth = 1.0
 latitude_data = np.linspace(-np.pi/2, np.pi/2, 30) #(pi/2)-polar angle (or elevation angle) in radians
 longitude_data = np.linspace(-np.pi, np.pi, 30) #azimuth in radians
 x_data = np.array([])
@@ -34,14 +36,13 @@ for i in range(len(longitude_data)):
     z_data = np.append(z_data, radius_earth * mt.sin(latitude_data[j]))
 unit_array = np.ones(np.size(longitude_data))
 z_data = np.outer(unit_array, z_data)
-ax.plot_wireframe(x_data, y_data, z_data, alpha=0.05, color='black', rstride=2, cstride=2, linewidth=0.5)
+ax.plot_wireframe(x_data, y_data, z_data, alpha=0.025, color='black', rstride=2, cstride=2, linewidth=0.5)
 ax.set_xlabel("X axis")
 ax.set_ylabel("Y axis")
 ax.set_zlabel("Z axis")
 
 '''plot ECEF reference frame'''
-# Plot an Earth centered reference frame which is randomly oriented
-ecef_axis_length = 0.5 * radius_earth
+ecef_axis_length = 1.5 * radius_earth
 ax.quiver(0, 0, 0, ecef_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
 ax.quiver(0, 0, 0, 0, ecef_axis_length, 0, arrow_length_ratio=0.3, color='blue')
 ax.quiver(0, 0, 0, 0, 0, ecef_axis_length, arrow_length_ratio=0.3, color='green')
@@ -86,11 +87,11 @@ for geom in continents.geometries():
             # Plot the continent outline
             ax.plot(x, y, z, color='maroon', linewidth=1)
 
-'''A line passing through the north and south poles'''
-x_poles = np.array([ut.spherical_to_cartesian(1, -90, 0)[0], ut.spherical_to_cartesian(1, 90, 0)[0]])
-y_poles = np.array([ut.spherical_to_cartesian(1, -90, 0)[1], ut.spherical_to_cartesian(1, 90, 0)[1]])
-z_poles = np.array([ut.spherical_to_cartesian(1, -90, 0)[2], ut.spherical_to_cartesian(1, 90, 0)[2]])
-ax.plot(x_poles, y_poles, z_poles, color='darkblue', alpha=1, linestyle="--", linewidth=1.5)
+# '''A line passing through the north and south poles (to add a title of 23.5)'''
+# x_poles = np.array([ut.spherical_to_cartesian(1, -90, 0)[0], ut.spherical_to_cartesian(1, 90, 0)[0]])
+# y_poles = np.array([ut.spherical_to_cartesian(1, -90, 0)[1], ut.spherical_to_cartesian(1, 90, 0)[1]])
+# z_poles = np.array([ut.spherical_to_cartesian(1, -90, 0)[2], ut.spherical_to_cartesian(1, 90, 0)[2]])
+# ax.plot(x_poles, y_poles, z_poles, color='darkblue', alpha=1, linestyle="--", linewidth=1.5)
 
 '''Plot LEO sphere'''
 radius_sat_orbit = 1.75 * radius_earth # radius of LEO
@@ -109,16 +110,39 @@ ax.quiver(0, 0, 0,
 
 '''plot a randomly oriented cubesat at the LEO above the fire prone area'''
 # Plot a spacecraft body reference frame which is randomly oriented
-scb_axis_length = 0.5 * radius_earth
-x_scb_origin = ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[0]
-y_scb_origin = ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[1]
-z_scb_origin = ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2]
-ax.quiver(x_scb_origin, y_scb_origin, z_scb_origin, scb_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
-ax.quiver(x_scb_origin, y_scb_origin, z_scb_origin, 0, scb_axis_length, 0, arrow_length_ratio=0.3, color='blue')
-ax.quiver(x_scb_origin, y_scb_origin, z_scb_origin, 0, 0, scb_axis_length, arrow_length_ratio=0.3, color='green')
-ax.text(x_scb_origin + scb_axis_length, y_scb_origin, z_scb_origin, 'Xscb', color='red')
-ax.text(x_scb_origin, y_scb_origin + scb_axis_length, z_scb_origin, 'Yscb', color='blue')
-ax.text(x_scb_origin, y_scb_origin, z_scb_origin + scb_axis_length, 'Zscb', color='green')
+scb_axis_length = 0.75 * radius_earth
+scb_origin = [ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[0], # x_scb_origin
+              ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[1], # y_scb_origin
+              ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2]] # z_scb_origin
+scb_ref_frame_start = np.array([scb_origin, scb_origin, scb_origin])
+random_rotation = R.random()
+scb_ref_frame_rotated = np.array([random_rotation.apply([scb_axis_length, 0, 0]),
+                                  random_rotation.apply([0, scb_axis_length, 0]),
+                                  random_rotation.apply([0, 0, scb_axis_length])])
+ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+          scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
+          arrow_length_ratio=0.3, linestyle="--",
+          color=['red', 'blue', 'green'])
+ax.text(scb_origin[0] + random_rotation.apply([scb_axis_length, 0, 0])[0], 
+        scb_origin[1] + random_rotation.apply([scb_axis_length, 0, 0])[1], 
+        scb_origin[2] + random_rotation.apply([scb_axis_length, 0, 0])[2], 
+        'Xscb', color='red')
+ax.text(scb_origin[0] + random_rotation.apply([0, scb_axis_length, 0])[0], 
+        scb_origin[1] + random_rotation.apply([0, scb_axis_length, 0])[1], 
+        scb_origin[2] + random_rotation.apply([0, scb_axis_length, 0])[2], 
+        'Yscb', color='blue')
+ax.text(scb_origin[0] + random_rotation.apply([0, 0, scb_axis_length])[0], 
+        scb_origin[1] + random_rotation.apply([0, 0, scb_axis_length])[1], 
+        scb_origin[2] + random_rotation.apply([0, 0, scb_axis_length])[2], 
+        'Zscb', color='green')
+
+'''plot a copy of the ECEF reference frame at the SCB origin'''
+ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], ecef_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
+ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, ecef_axis_length, 0, arrow_length_ratio=0.3, color='blue')
+ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, 0, ecef_axis_length, arrow_length_ratio=0.3, color='green')
+ax.text(scb_origin[0] + ecef_axis_length, scb_origin[1], scb_origin[2], 'Xecef', color='red')
+ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef', color='blue')
+ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
 
 '''display chart'''
 plt.show()
