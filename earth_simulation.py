@@ -19,7 +19,7 @@ target_longitude = -118.5464
 
 '''Plot all points on Earth'''
 ax = plt.figure(figsize=(10, 10)).add_subplot(111, projection="3d")
-radius_earth = 1.0
+radius_earth = 10.0
 latitude_data = np.linspace(-np.pi/2, np.pi/2, 30) #(pi/2)-polar angle (or elevation angle) in radians
 longitude_data = np.linspace(-np.pi, np.pi, 30) #azimuth in radians
 x_data = np.array([])
@@ -36,7 +36,7 @@ for i in range(len(longitude_data)):
     z_data = np.append(z_data, radius_earth * mt.sin(latitude_data[j]))
 unit_array = np.ones(np.size(longitude_data))
 z_data = np.outer(unit_array, z_data)
-ax.plot_wireframe(x_data, y_data, z_data, alpha=0.025, color='black', rstride=2, cstride=2, linewidth=0.5)
+ax.plot_wireframe(x_data, y_data, z_data, alpha=0.015, color='black', rstride=2, cstride=2, linewidth=0.5)
 ax.set_xlabel("X axis")
 ax.set_ylabel("Y axis")
 ax.set_zlabel("Z axis")
@@ -119,6 +119,7 @@ random_rotation = R.random()
 scb_ref_frame_rotated = np.array([random_rotation.apply([scb_axis_length, 0, 0]),
                                   random_rotation.apply([0, scb_axis_length, 0]),
                                   random_rotation.apply([0, 0, scb_axis_length])])
+
 ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
           scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
           arrow_length_ratio=0.3, linestyle="--",
@@ -145,4 +146,10 @@ ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef',
 ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
 
 '''display chart'''
+print(scb_ref_frame_start)
+print(scb_ref_frame_rotated)
 plt.show()
+
+
+
+
