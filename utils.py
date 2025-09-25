@@ -12,23 +12,17 @@ def spherical_to_cartesian(radius, latitude, longitude): # (radius, elevation, a
   #print(f"(The x, y, and z co-ordinates of the point ({radius}, {latitude}, {longitude}) are {x_cood}, {y_cood}, {z_cood})")
   return x_cood, y_cood, z_cood
 
-spherical_to_cartesian(1, 34.0467, -118.5464) # 34.0467°N, 118.5464°W
-print(spherical_to_cartesian(1, 34.0467, -118.5464)[0])
-print(spherical_to_cartesian(1, 34.0467, -118.5464)[1])
-print(spherical_to_cartesian(1, 34.0467, -118.5464)[2])
-
 '''Cartesian to Spherical co-ordinate conversion'''
-def cartesian_to_spherical(x, y, z):
+def cartesian_to_spherical(x_origin, y_origin, z_origin, x_pt, y_pt, z_pt):
   import math as mt
+  x = abs(x_pt - x_origin)
+  y = abs(y_pt - y_origin)
+  z = abs(z_pt - z_origin)
   length = mt.sqrt(x**2 + y**2 + z**2)
-  azimuth = mt.atan2(y/(mt.sqrt(x**2 + y**2)), x/(mt.sqrt(x**2 + y**2))) * 180/mt.pi
-  elevation = 90 - (mt.atan2(mt.sqrt(x**2 + y**2)/mt.sqrt(x**2 + y**2 + z**2), z/mt.sqrt(x**2 + y**2 + z**2)) * 180/mt.pi)
-  return length, elevation, azimuth
+  azimuth = mt.atan2(y/(mt.sqrt(x**2 + y**2)), x/(mt.sqrt(x**2 + y**2)))
+  elevation = (mt.pi/2) - mt.atan2(mt.sqrt(x**2 + y**2)/mt.sqrt(x**2 + y**2 + z**2), z/mt.sqrt(x**2 + y**2 + z**2))
+  return length, azimuth, elevation
 
-cartesian_to_spherical(1, 34.0467, -118.5464) # 34.0467°N, 118.5464°W
-print(cartesian_to_spherical(-0.3959544967436572, -0.7278511977670105, 0.5598684402764683)[0])
-print(cartesian_to_spherical(-0.3959544967436572, -0.7278511977670105, 0.5598684402764683)[1])
-print(cartesian_to_spherical(-0.3959544967436572, -0.7278511977670105, 0.5598684402764683)[2])
 
 
 

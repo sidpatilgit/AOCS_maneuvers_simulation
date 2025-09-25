@@ -18,7 +18,7 @@ target_latitude = 34.0467
 target_longitude = -118.5464
 
 '''Plot all points on Earth'''
-ax = plt.figure(figsize=(10, 10)).add_subplot(111, projection="3d")
+ax = plt.figure(figsize=(7, 7)).add_subplot(111, projection="3d")
 radius_earth = 10.0
 latitude_data = np.linspace(-np.pi/2, np.pi/2, 30) #(pi/2)-polar angle (or elevation angle) in radians
 longitude_data = np.linspace(-np.pi, np.pi, 30) #azimuth in radians
@@ -119,6 +119,7 @@ random_rotation = R.random()
 scb_ref_frame_rotated = np.array([random_rotation.apply([scb_axis_length, 0, 0]),
                                   random_rotation.apply([0, scb_axis_length, 0]),
                                   random_rotation.apply([0, 0, scb_axis_length])])
+scb_coods = scb_ref_frame_start + scb_ref_frame_rotated
 
 ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
           scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
@@ -145,10 +146,30 @@ ax.text(scb_origin[0] + ecef_axis_length, scb_origin[1], scb_origin[2], 'Xecef',
 ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef', color='blue')
 ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
 
+'''Euler angles calculations'''
+'''
+Rotate the reference frame by Xscb_azimuth about the Zecef axis
+Rotate the reference frame by Xscb_elevation about the Yecef axis
+'''
+Xscb_length = ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[0]
+Xscb_azimuth = ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[1]
+Xscb_elevation = ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[2]
+
+DCM_Zecef = np.array([[mt.cos(Xscb_azimuth), mt.sin(Xscb_azimuth), 0],
+                      [-mt.sin(Xscb_azimuth), mt.cos(Xscb_azimuth), 0],
+                      [0, 0, 1]])
+
+scb_rotated_abt_Zecef = np.array(np.matmul(DCM_Zecef, scb_ref_frame_rotated.T)).T
+
+ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+          scb_rotated_abt_Zecef[:, 0], scb_rotated_abt_Zecef[:, 1], scb_rotated_abt_Zecef[:, 2],
+          arrow_length_ratio=0.3, linestyle="--",
+          color=['red', 'blue', 'green'])
+
+
 '''display chart'''
-print(scb_ref_frame_start)
-print(scb_ref_frame_rotated)
 plt.show()
+
 
 
 
