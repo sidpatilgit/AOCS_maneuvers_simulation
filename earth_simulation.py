@@ -1,7 +1,6 @@
 """ Create a rotating Earth; create the exact change in tilt, wobble, angular velocity based on how Earth is currently behaving"""
 
 '''Create a rotating, titled Earth'''
-
 import utils as ut
 import numpy as np #generating data
 import matplotlib.pyplot as plt #for plotting
@@ -108,34 +107,62 @@ ax.quiver(0, 0, 0,
           ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[1], 
           ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2], arrow_length_ratio=0.2, color='black')
 
-'''plot a randomly oriented cubesat at the LEO above the fire prone area'''
-# Plot a spacecraft body reference frame which is randomly oriented
+# '''plot a randomly oriented cubesat at the LEO above the fire prone area'''
+# scb_axis_length = 0.75 * radius_earth
+# scb_origin = [ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[0], # x_scb_origin
+#               ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[1], # y_scb_origin
+#               ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2]] # z_scb_origin
+# scb_ref_frame_start = np.array([scb_origin, scb_origin, scb_origin])
+# random_rotation = R.random()
+# scb_ref_frame_rotated = np.array([random_rotation.apply([scb_axis_length, 0, 0]),
+#                                   random_rotation.apply([0, scb_axis_length, 0]),
+#                                   random_rotation.apply([0, 0, scb_axis_length])])
+# scb_coods = scb_ref_frame_start + scb_ref_frame_rotated
+
+# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+#           scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
+#           arrow_length_ratio=0.3, linestyle="--",
+#           color=['red', 'blue', 'green'])
+# ax.text(scb_origin[0] + random_rotation.apply([scb_axis_length, 0, 0])[0], 
+#         scb_origin[1] + random_rotation.apply([scb_axis_length, 0, 0])[1], 
+#         scb_origin[2] + random_rotation.apply([scb_axis_length, 0, 0])[2], 
+#         'Xscb', color='red')
+# ax.text(scb_origin[0] + random_rotation.apply([0, scb_axis_length, 0])[0], 
+#         scb_origin[1] + random_rotation.apply([0, scb_axis_length, 0])[1], 
+#         scb_origin[2] + random_rotation.apply([0, scb_axis_length, 0])[2], 
+#         'Yscb', color='blue')
+# ax.text(scb_origin[0] + random_rotation.apply([0, 0, scb_axis_length])[0], 
+#         scb_origin[1] + random_rotation.apply([0, 0, scb_axis_length])[1], 
+#         scb_origin[2] + random_rotation.apply([0, 0, scb_axis_length])[2], 
+#         'Zscb', color='green')
+
+'''plot a specifically oriented cubesat at the LEO above the fire prone area'''
 scb_axis_length = 0.75 * radius_earth
 scb_origin = [ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[0], # x_scb_origin
               ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[1], # y_scb_origin
               ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2]] # z_scb_origin
 scb_ref_frame_start = np.array([scb_origin, scb_origin, scb_origin])
-random_rotation = R.random()
-scb_ref_frame_rotated = np.array([random_rotation.apply([scb_axis_length, 0, 0]),
-                                  random_rotation.apply([0, scb_axis_length, 0]),
-                                  random_rotation.apply([0, 0, scb_axis_length])])
+specific_rotation = R.from_euler('xyz', [10, 35, 135], degrees=True)
+scb_ref_frame_rotated = np.array([specific_rotation.apply([scb_axis_length, 0, 0]),
+                                  specific_rotation.apply([0, scb_axis_length, 0]),
+                                  specific_rotation.apply([0, 0, scb_axis_length])])
 scb_coods = scb_ref_frame_start + scb_ref_frame_rotated
 
 ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
           scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
           arrow_length_ratio=0.3, linestyle="--",
           color=['red', 'blue', 'green'])
-ax.text(scb_origin[0] + random_rotation.apply([scb_axis_length, 0, 0])[0], 
-        scb_origin[1] + random_rotation.apply([scb_axis_length, 0, 0])[1], 
-        scb_origin[2] + random_rotation.apply([scb_axis_length, 0, 0])[2], 
+ax.text(scb_origin[0] + specific_rotation.apply([scb_axis_length, 0, 0])[0], 
+        scb_origin[1] + specific_rotation.apply([scb_axis_length, 0, 0])[1], 
+        scb_origin[2] + specific_rotation.apply([scb_axis_length, 0, 0])[2], 
         'Xscb', color='red')
-ax.text(scb_origin[0] + random_rotation.apply([0, scb_axis_length, 0])[0], 
-        scb_origin[1] + random_rotation.apply([0, scb_axis_length, 0])[1], 
-        scb_origin[2] + random_rotation.apply([0, scb_axis_length, 0])[2], 
+ax.text(scb_origin[0] + specific_rotation.apply([0, scb_axis_length, 0])[0], 
+        scb_origin[1] + specific_rotation.apply([0, scb_axis_length, 0])[1], 
+        scb_origin[2] + specific_rotation.apply([0, scb_axis_length, 0])[2], 
         'Yscb', color='blue')
-ax.text(scb_origin[0] + random_rotation.apply([0, 0, scb_axis_length])[0], 
-        scb_origin[1] + random_rotation.apply([0, 0, scb_axis_length])[1], 
-        scb_origin[2] + random_rotation.apply([0, 0, scb_axis_length])[2], 
+ax.text(scb_origin[0] + specific_rotation.apply([0, 0, scb_axis_length])[0], 
+        scb_origin[1] + specific_rotation.apply([0, 0, scb_axis_length])[1], 
+        scb_origin[2] + specific_rotation.apply([0, 0, scb_axis_length])[2], 
         'Zscb', color='green')
 
 '''plot a copy of the ECEF reference frame at the SCB origin'''
@@ -151,21 +178,61 @@ ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef',
 Rotate the reference frame by Xscb_azimuth about the Zecef axis
 Rotate the reference frame by Xscb_elevation about the Yecef axis
 '''
-Xscb_length = ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[0]
-Xscb_azimuth = ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[1]
-Xscb_elevation = ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[2]
+azimuth = (ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2],
+                                    scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[1]) * (180/mt.pi)
+polar = (ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2],
+                                    scb_coods[0, 0], scb_coods[0, 1], scb_coods[0, 2])[2]) * (180/mt.pi)
 
-DCM_Zecef = np.array([[mt.cos(Xscb_azimuth), mt.sin(Xscb_azimuth), 0],
-                      [-mt.sin(Xscb_azimuth), mt.cos(Xscb_azimuth), 0],
-                      [0, 0, 1]])
+'''DCM logic'''
+if scb_coods[0, 0] >= 0 and scb_coods[0, 1] >= 0 and scb_coods[0, 2] >= 0:
+   azim_rotation_of_Xscb = -azimuth
+   elev_rotation_of_Xscb = (90-polar)
+elif scb_coods[0, 0] < 0 and scb_coods[0, 1] >= 0 and scb_coods[0, 2] >= 0:
+   azim_rotation_of_Xscb = -(90+azimuth)
+   elev_rotation_of_Xscb = (90-polar)
+elif scb_coods[0, 0] >= 0 and scb_coods[0, 1] < 0 and scb_coods[0, 2] >= 0:
+   azim_rotation_of_Xscb = azimuth
+   elev_rotation_of_Xscb = 90-polar
+elif scb_coods[0, 0] < 0 and scb_coods[0, 1] < 0 and scb_coods[0, 2] >= 0:
+   azim_rotation_of_Xscb = (90+azimuth)
+   elev_rotation_of_Xscb = (90-polar)
+elif scb_coods[0, 0] >= 0 and scb_coods[0, 1] >= 0 and scb_coods[0, 2] < 0:
+   azim_rotation_of_Xscb = -azimuth
+   elev_rotation_of_Xscb = -(90-polar)
+elif scb_coods[0, 0] < 0 and scb_coods[0, 1] >= 0 and scb_coods[0, 2] < 0:
+   azim_rotation_of_Xscb = (180+azimuth)
+   elev_rotation_of_Xscb = -(90-polar)
+elif scb_coods[0, 0] >= 0 and scb_coods[0, 1] < 0 and scb_coods[0, 2] < 0:
+   azim_rotation_of_Xscb = azimuth
+   elev_rotation_of_Xscb = -(90-polar)
+elif scb_coods[0, 0] < 0 and scb_coods[0, 1] < 0 and scb_coods[0, 2] < 0:
+   azim_rotation_of_Xscb = (90+azimuth)
+   elev_rotation_of_Xscb_of_Xscb = -(90-polar)
 
-scb_rotated_abt_Zecef = np.array(np.matmul(DCM_Zecef, scb_ref_frame_rotated.T)).T
+print(f"scb_ref_frame_start: {scb_ref_frame_start}")
+print(f"scb_ref_frame_rotated: {scb_ref_frame_rotated}")
+
+print(f"scb_coods: {scb_coods[0, 0]}, {scb_coods[0, 1]}, {scb_coods[0, 2]}")
+
+print(f"azimuth: {azimuth}")
+print(f"polar: {polar}")
+
+print(f"azim_rotation_of_Xscb: {azim_rotation_of_Xscb}")
+print(f"elev_rotation_of_Xscb: {elev_rotation_of_Xscb}")
+
+
+dcm_rotation_abt_Zscb = np.array([[mt.cos(azim_rotation_of_Xscb), -mt.sin(azim_rotation_of_Xscb), 0],
+                                  [mt.sin(azim_rotation_of_Xscb), mt.cos(azim_rotation_of_Xscb), 0],
+                                  [0, 0, 1]])
+
+rotation_about_Zscb = np.array(np.matmul(dcm_rotation_abt_Zscb, scb_ref_frame_rotated.T)).T
 
 ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-          scb_rotated_abt_Zecef[:, 0], scb_rotated_abt_Zecef[:, 1], scb_rotated_abt_Zecef[:, 2],
-          arrow_length_ratio=0.3, linestyle="--",
+          rotation_about_Zscb[:, 0], rotation_about_Zscb[:, 1], rotation_about_Zscb[:, 2],
+          arrow_length_ratio=0.1, linestyle="-",
           color=['red', 'blue', 'green'])
 
+print(dcm_rotation_abt_Zscb)
 
 '''display chart'''
 plt.show()

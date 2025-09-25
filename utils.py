@@ -20,9 +20,6 @@ def cartesian_to_spherical(x_origin, y_origin, z_origin, x_pt, y_pt, z_pt):
   z = abs(z_pt - z_origin)
   length = mt.sqrt(x**2 + y**2 + z**2)
   azimuth = mt.atan2(y/(mt.sqrt(x**2 + y**2)), x/(mt.sqrt(x**2 + y**2)))
-  elevation = (mt.pi/2) - mt.atan2(mt.sqrt(x**2 + y**2)/mt.sqrt(x**2 + y**2 + z**2), z/mt.sqrt(x**2 + y**2 + z**2))
-  return length, azimuth, elevation
-
-
-
+  polar = mt.atan2(mt.sqrt(x**2 + y**2)/mt.sqrt(x**2 + y**2 + z**2), z/mt.sqrt(x**2 + y**2 + z**2))
+  return length, azimuth, polar
 
