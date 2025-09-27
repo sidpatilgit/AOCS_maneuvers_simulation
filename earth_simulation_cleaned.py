@@ -87,7 +87,7 @@ for geom in continents.geometries():
             ax.plot(x, y, z, color='maroon', linewidth=1)
 
 '''Plot LEO sphere'''
-radius_sat_orbit = 2 * radius_earth # radius of LEO
+radius_sat_orbit = 1.75 * radius_earth # radius of LEO
 lat, long = np.meshgrid(latitude_data, longitude_data)
 x_data_sat = radius_sat_orbit * np.cos(lat) * np.cos(long)
 y_data_sat = radius_sat_orbit * np.cos(lat) * np.sin(long)
@@ -258,7 +258,7 @@ ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_st
           rotation_about_Zscb_R[:, 0], rotation_about_Zscb_R[:, 1], rotation_about_Zscb_R[:, 2],
           arrow_length_ratio=0.4, linestyle="--",
           color=['red', 'blue', 'green'])
-print(f"Xscb_R_rotation_angle_about_Zscb_R: {target_longitude + 180}")
+print(f"Xscb_R_rotation_angle_about_Zscb_R: {Xscb_R_rotation_angle_about_Zscb_R}")
 
 Xscb_R_rotation_angle_about_Yscb_R = (target_latitude)*(mt.pi/180) # point in the diametrically opposite direction
 dcm_Xscb_R_rotation_angle_about_Yscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.sin(Xscb_R_rotation_angle_about_Yscb_R)],
@@ -267,12 +267,13 @@ dcm_Xscb_R_rotation_angle_about_Yscb_R = np.array([[mt.cos(Xscb_R_rotation_angle
 
 rotation_about_Yscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Yscb_R, rotation_about_Zscb_R.T)).T
 
-# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-#           rotation_about_Yscb_R[:, 0], rotation_about_Yscb_R[:, 1], rotation_about_Yscb_R[:, 2],
-#           arrow_length_ratio=0.4, linestyle="-.",
-#           color=['red', 'blue', 'green'])
-# print(f"Xscb_R_rotation_angle_about_Yscb_R: {target_latitude}")
+ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+          rotation_about_Yscb_R[:, 0], rotation_about_Yscb_R[:, 1], rotation_about_Yscb_R[:, 2],
+          arrow_length_ratio=0.4, linestyle="-.",
+          color=['red', 'blue', 'green'])
+print(f"Xscb_R_rotation_angle_about_Yscb_R: {Xscb_R_rotation_angle_about_Yscb_R}")
 
+# given a randomly oriented reference frame, how can we  rotate it about it Y axis?
 
 '''display chart'''
 plt.show()
