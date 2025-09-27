@@ -115,7 +115,7 @@ scb_ref_frame_rotated = np.array([rotation.apply([scb_axis_length, 0, 0]),
 scb_coods = scb_ref_frame_start + scb_ref_frame_rotated
 ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
           scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
-          arrow_length_ratio=0.3, linestyle="--",
+          arrow_length_ratio=0.3, linestyle=":",
           color=['red', 'blue', 'green'])
 ax.text(scb_origin[0] + rotation.apply([scb_axis_length, 0, 0])[0], 
         scb_origin[1] + rotation.apply([scb_axis_length, 0, 0])[1], 
@@ -155,7 +155,7 @@ if scb_ref_frame_rotated[0, 0] >= 0 and scb_ref_frame_rotated[0, 1] >= 0 and scb
    azim_rotation_of_Xscb = -azimuth
    elev_rotation_of_Xscb = (90 - polar)
 elif scb_ref_frame_rotated[0, 0] < 0 and scb_ref_frame_rotated[0, 1] >= 0 and scb_ref_frame_rotated[0, 2] >= 0: # X-ve, Y+ve, Z+ve
-   azim_rotation_of_Xscb = (180 - azimuth)
+   azim_rotation_of_Xscb = -(180 - azimuth)
    elev_rotation_of_Xscb = (90 - polar)
 elif scb_ref_frame_rotated[0, 0] >= 0 and scb_ref_frame_rotated[0, 1] < 0 and scb_ref_frame_rotated[0, 2] >= 0: # X+ve, Y-ve, Z+ve
    azim_rotation_of_Xscb = azimuth
@@ -168,7 +168,7 @@ elif scb_ref_frame_rotated[0, 0] >= 0 and scb_ref_frame_rotated[0, 1] >= 0 and s
    azim_rotation_of_Xscb = -azimuth
    elev_rotation_of_Xscb = -(90 - polar)
 elif scb_ref_frame_rotated[0, 0] < 0 and scb_ref_frame_rotated[0, 1] >= 0 and scb_ref_frame_rotated[0, 2] < 0: # X-ve, Y+ve, Z-ve
-   azim_rotation_of_Xscb = - (180 - azimuth)
+   azim_rotation_of_Xscb = -(180 - azimuth)
    elev_rotation_of_Xscb = -(90 - polar)
 elif scb_ref_frame_rotated[0, 0] >= 0 and scb_ref_frame_rotated[0, 1] < 0 and scb_ref_frame_rotated[0, 2] < 0: # X+ve, Y-ve, Z-ve
    azim_rotation_of_Xscb = azimuth
@@ -183,28 +183,47 @@ dcm_rotation_abt_Zscb = np.array([[mt.cos(azim_rotation_of_Xscb), -mt.sin(azim_r
                                   [mt.sin(azim_rotation_of_Xscb), mt.cos(azim_rotation_of_Xscb), 0],
                                   [0, 0, 1]])
 rotation_about_Zscb = np.array(np.matmul(dcm_rotation_abt_Zscb, scb_ref_frame_rotated.T)).T
-ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-          rotation_about_Zscb[:, 0], rotation_about_Zscb[:, 1], rotation_about_Zscb[:, 2],
-          arrow_length_ratio=0.4, linestyle=":",
-          color=['red', 'blue', 'green'])
+# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+#           rotation_about_Zscb[:, 0], rotation_about_Zscb[:, 1], rotation_about_Zscb[:, 2],
+#           arrow_length_ratio=0.4, linestyle=":",
+#           color=['red', 'blue', 'green'])
 
 dcm_rotation_abt_Yscb = np.array([[mt.cos(elev_rotation_of_Xscb), 0, mt.sin(elev_rotation_of_Xscb)],
                                   [0, 1, 0],
                                   [-mt.sin(elev_rotation_of_Xscb), 0, mt.cos(elev_rotation_of_Xscb)]])
 rotation_about_Yscb = np.array(np.matmul(dcm_rotation_abt_Yscb, rotation_about_Zscb.T)).T
 scb_coods_Zscb_rotated_twice = scb_ref_frame_start + rotation_about_Yscb
-ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-          rotation_about_Yscb[:, 0], rotation_about_Yscb[:, 1], rotation_about_Yscb[:, 2],
-          arrow_length_ratio=0.4, linestyle="-.",
-          color=['red', 'blue', 'green'])
+# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+#           rotation_about_Yscb[:, 0], rotation_about_Yscb[:, 1], rotation_about_Yscb[:, 2],
+#           arrow_length_ratio=0.4, linestyle="-.",
+#           color=['red', 'blue', 'green'])
 
 polar_Zscb_for_rotation_about_Xecef = (ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], 
                                                                 scb_coods_Zscb_rotated_twice[2, 0], scb_coods_Zscb_rotated_twice[2, 1], scb_coods_Zscb_rotated_twice[2, 2])[2]) * (180/mt.pi)
 
-if rotation_about_Yscb[2, 2] <= 0: # if w is negative, then that means that Zscb is pointing downwards
-   polar_Zscb_for_rotation_about_Xecef = (180 - polar_Zscb_for_rotation_about_Xecef) * (mt.pi/180)
-else:
-   polar_Zscb_for_rotation_about_Xecef = (polar_Zscb_for_rotation_about_Xecef) * (mt.pi/180)
+print(f"Polar of Zscb before final rotation: {polar_Zscb_for_rotation_about_Xecef}")
+print(f"rotation_about_Yscb: {rotation_about_Yscb}")
+# Xecef positive
+if rotation_about_Yscb[2, 0] >= 0 and rotation_about_Yscb[2, 1] >= 0 and rotation_about_Yscb[2, 2] >= 0:
+   polar_Zscb_for_rotation_about_Xecef = polar_Zscb_for_rotation_about_Xecef
+elif rotation_about_Yscb[2, 0] >= 0 and rotation_about_Yscb[2, 1] >= 0 and rotation_about_Yscb[2, 2] < 0:
+   polar_Zscb_for_rotation_about_Xecef = (180 - polar_Zscb_for_rotation_about_Xecef)
+elif rotation_about_Yscb[2, 0] >= 0 and rotation_about_Yscb[2, 1] < 0 and rotation_about_Yscb[2, 2] < 0:
+   polar_Zscb_for_rotation_about_Xecef = -(180 - polar_Zscb_for_rotation_about_Xecef)
+elif rotation_about_Yscb[2, 0] >= 0 and rotation_about_Yscb[2, 1] < 0 and rotation_about_Yscb[2, 2] >= 0:
+   polar_Zscb_for_rotation_about_Xecef = -(polar_Zscb_for_rotation_about_Xecef)
+# Xecef negative
+elif rotation_about_Yscb[2, 0] < 0 and rotation_about_Yscb[2, 1] >= 0 and rotation_about_Yscb[2, 2] >= 0:
+   polar_Zscb_for_rotation_about_Xecef = polar_Zscb_for_rotation_about_Xecef
+elif rotation_about_Yscb[2, 0] < 0 and rotation_about_Yscb[2, 1] >= 0 and rotation_about_Yscb[2, 2] < 0:
+   polar_Zscb_for_rotation_about_Xecef = (180 - polar_Zscb_for_rotation_about_Xecef)
+elif rotation_about_Yscb[2, 0] < 0 and rotation_about_Yscb[2, 1] < 0 and rotation_about_Yscb[2, 2] < 0:
+   polar_Zscb_for_rotation_about_Xecef = -(180 - polar_Zscb_for_rotation_about_Xecef)
+elif rotation_about_Yscb[2, 0] < 0 and rotation_about_Yscb[2, 1] < 0 and rotation_about_Yscb[2, 2] >= 0:
+   polar_Zscb_for_rotation_about_Xecef = - (polar_Zscb_for_rotation_about_Xecef)
+
+polar_Zscb_for_rotation_about_Xecef = polar_Zscb_for_rotation_about_Xecef * (mt.pi/180)
+
 dcm_rotation_abt_Xscb = np.array([[1, 0, 0],
                                   [0, mt.cos(polar_Zscb_for_rotation_about_Xecef), -mt.sin(polar_Zscb_for_rotation_about_Xecef)],
                                   [0, mt.sin(polar_Zscb_for_rotation_about_Xecef), mt.cos(polar_Zscb_for_rotation_about_Xecef)]])
@@ -226,11 +245,6 @@ ax.text(scb_origin[0] + rotation_about_Xscb[2, 0],
         scb_origin[2] + rotation_about_Xscb[2, 2], 
         'Zscb_R', color='green')
 
-print(f"scb_ref_frame_rotated: {scb_ref_frame_rotated}")
-print(" ")
-print(f"scb_ref_frame_rotated[0, 0]: {scb_ref_frame_rotated[0, 0]}")
-print(f"scb_ref_frame_rotated[0, 1]: {scb_ref_frame_rotated[0, 1]}")
-print(f"scb_ref_frame_rotated[0, 2]: {scb_ref_frame_rotated[0, 2]}")
 print(" ")
 print(f"azim_rotation_of_Xscb: {azim_rotation_of_Xscb * (180/mt.pi)}")
 print(f"elev_rotation_of_Xscb: {elev_rotation_of_Xscb * (180/mt.pi)}")
