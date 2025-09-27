@@ -87,7 +87,7 @@ for geom in continents.geometries():
             ax.plot(x, y, z, color='maroon', linewidth=1)
 
 '''Plot LEO sphere'''
-radius_sat_orbit = 1.75 * radius_earth # radius of LEO
+radius_sat_orbit = 2 * radius_earth # radius of LEO
 lat, long = np.meshgrid(latitude_data, longitude_data)
 x_data_sat = radius_sat_orbit * np.cos(lat) * np.cos(long)
 y_data_sat = radius_sat_orbit * np.cos(lat) * np.sin(long)
@@ -113,30 +113,30 @@ scb_ref_frame_rotated = np.array([rotation.apply([scb_axis_length, 0, 0]),
                                   rotation.apply([0, scb_axis_length, 0]),
                                   rotation.apply([0, 0, scb_axis_length])])
 scb_coods = scb_ref_frame_start + scb_ref_frame_rotated
-ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-          scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
-          arrow_length_ratio=0.3, linestyle=":",
-          color=['red', 'blue', 'green'])
-ax.text(scb_origin[0] + rotation.apply([scb_axis_length, 0, 0])[0], 
-        scb_origin[1] + rotation.apply([scb_axis_length, 0, 0])[1], 
-        scb_origin[2] + rotation.apply([scb_axis_length, 0, 0])[2], 
-        'Xscb', color='red')
-ax.text(scb_origin[0] + rotation.apply([0, scb_axis_length, 0])[0], 
-        scb_origin[1] + rotation.apply([0, scb_axis_length, 0])[1], 
-        scb_origin[2] + rotation.apply([0, scb_axis_length, 0])[2], 
-        'Yscb', color='blue')
-ax.text(scb_origin[0] + rotation.apply([0, 0, scb_axis_length])[0], 
-        scb_origin[1] + rotation.apply([0, 0, scb_axis_length])[1], 
-        scb_origin[2] + rotation.apply([0, 0, scb_axis_length])[2], 
-        'Zscb', color='green')
+# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+#           scb_ref_frame_rotated[:, 0], scb_ref_frame_rotated[:, 1], scb_ref_frame_rotated[:, 2],
+#           arrow_length_ratio=0.3, linestyle=":",
+#           color=['red', 'blue', 'green'])
+# ax.text(scb_origin[0] + rotation.apply([scb_axis_length, 0, 0])[0], 
+#         scb_origin[1] + rotation.apply([scb_axis_length, 0, 0])[1], 
+#         scb_origin[2] + rotation.apply([scb_axis_length, 0, 0])[2], 
+#         'Xscb', color='red')
+# ax.text(scb_origin[0] + rotation.apply([0, scb_axis_length, 0])[0], 
+#         scb_origin[1] + rotation.apply([0, scb_axis_length, 0])[1], 
+#         scb_origin[2] + rotation.apply([0, scb_axis_length, 0])[2], 
+#         'Yscb', color='blue')
+# ax.text(scb_origin[0] + rotation.apply([0, 0, scb_axis_length])[0], 
+#         scb_origin[1] + rotation.apply([0, 0, scb_axis_length])[1], 
+#         scb_origin[2] + rotation.apply([0, 0, scb_axis_length])[2], 
+#         'Zscb', color='green')
 
 '''plot a copy of the ECEF reference frame at the SCB origin'''
-ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], ecef_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
-ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, ecef_axis_length, 0, arrow_length_ratio=0.3, color='blue')
-ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, 0, ecef_axis_length, arrow_length_ratio=0.3, color='green')
-ax.text(scb_origin[0] + ecef_axis_length, scb_origin[1], scb_origin[2], 'Xecef', color='red')
-ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef', color='blue')
-ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
+# ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], ecef_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
+# ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, ecef_axis_length, 0, arrow_length_ratio=0.3, color='blue')
+# ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, 0, ecef_axis_length, arrow_length_ratio=0.3, color='green')
+# ax.text(scb_origin[0] + ecef_axis_length, scb_origin[1], scb_origin[2], 'Xecef', color='red')
+# ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef', color='blue')
+# ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
 
 '''Euler angles calculations'''
 '''
@@ -201,8 +201,6 @@ scb_coods_Zscb_rotated_twice = scb_ref_frame_start + rotation_about_Yscb
 polar_Zscb_for_rotation_about_Xecef = (ut.cartesian_to_spherical(scb_origin[0], scb_origin[1], scb_origin[2], 
                                                                 scb_coods_Zscb_rotated_twice[2, 0], scb_coods_Zscb_rotated_twice[2, 1], scb_coods_Zscb_rotated_twice[2, 2])[2]) * (180/mt.pi)
 
-print(f"Polar of Zscb before final rotation: {polar_Zscb_for_rotation_about_Xecef}")
-print(f"rotation_about_Yscb: {rotation_about_Yscb}")
 # Xecef positive
 if rotation_about_Yscb[2, 0] >= 0 and rotation_about_Yscb[2, 1] >= 0 and rotation_about_Yscb[2, 2] >= 0:
    polar_Zscb_for_rotation_about_Xecef = polar_Zscb_for_rotation_about_Xecef
@@ -245,10 +243,36 @@ ax.text(scb_origin[0] + rotation_about_Xscb[2, 0],
         scb_origin[2] + rotation_about_Xscb[2, 2], 
         'Zscb_R', color='green')
 
-print(" ")
-print(f"azim_rotation_of_Xscb: {azim_rotation_of_Xscb * (180/mt.pi)}")
-print(f"elev_rotation_of_Xscb: {elev_rotation_of_Xscb * (180/mt.pi)}")
-print(f"polar_Zscb_for_rotation_about_Xecef: {polar_Zscb_for_rotation_about_Xecef * (180/mt.pi)}")
+# print(" ") # These angles are output of the ADCS algorithm
+# print(f"azim_rotation_of_Xscb: {azim_rotation_of_Xscb * (180/mt.pi)}")
+# print(f"elev_rotation_of_Xscb: {elev_rotation_of_Xscb * (180/mt.pi)}")
+# print(f"polar_Zscb_for_rotation_about_Xecef: {polar_Zscb_for_rotation_about_Xecef * (180/mt.pi)}")
+
+'''Rotation sequence to point the Xscb axis towards to target latitude and longitutde'''
+Xscb_R_rotation_angle_about_Zscb_R = (target_longitude + 180)*(mt.pi/180) # point in the diametrically opposite direction
+dcm_Xscb_R_rotation_angle_about_Zscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Zscb_R), -mt.sin(Xscb_R_rotation_angle_about_Zscb_R), 0],
+                                             [mt.sin(Xscb_R_rotation_angle_about_Zscb_R), mt.cos(Xscb_R_rotation_angle_about_Zscb_R), 0],
+                                             [0, 0, 1]])
+rotation_about_Zscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Zscb_R, rotation_about_Xscb.T)).T
+ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+          rotation_about_Zscb_R[:, 0], rotation_about_Zscb_R[:, 1], rotation_about_Zscb_R[:, 2],
+          arrow_length_ratio=0.4, linestyle="--",
+          color=['red', 'blue', 'green'])
+print(f"Xscb_R_rotation_angle_about_Zscb_R: {target_longitude + 180}")
+
+Xscb_R_rotation_angle_about_Yscb_R = (target_latitude)*(mt.pi/180) # point in the diametrically opposite direction
+dcm_Xscb_R_rotation_angle_about_Yscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.sin(Xscb_R_rotation_angle_about_Yscb_R)],
+                                                   [0, 1, 0],
+                                                   [-mt.sin(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.cos(Xscb_R_rotation_angle_about_Yscb_R)]])
+
+rotation_about_Yscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Yscb_R, rotation_about_Zscb_R.T)).T
+
+# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+#           rotation_about_Yscb_R[:, 0], rotation_about_Yscb_R[:, 1], rotation_about_Yscb_R[:, 2],
+#           arrow_length_ratio=0.4, linestyle="-.",
+#           color=['red', 'blue', 'green'])
+# print(f"Xscb_R_rotation_angle_about_Yscb_R: {target_latitude}")
+
 
 '''display chart'''
 plt.show()
