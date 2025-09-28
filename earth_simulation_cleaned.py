@@ -131,12 +131,12 @@ scb_coods = scb_ref_frame_start + scb_ref_frame_rotated
 #         'Zscb', color='green')
 
 '''plot a copy of the ECEF reference frame at the SCB origin'''
-# ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], ecef_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
-# ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, ecef_axis_length, 0, arrow_length_ratio=0.3, color='blue')
-# ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, 0, ecef_axis_length, arrow_length_ratio=0.3, color='green')
-# ax.text(scb_origin[0] + ecef_axis_length, scb_origin[1], scb_origin[2], 'Xecef', color='red')
-# ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef', color='blue')
-# ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
+ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], ecef_axis_length, 0, 0, arrow_length_ratio=0.3, color='red')
+ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, ecef_axis_length, 0, arrow_length_ratio=0.3, color='blue')
+ax.quiver(scb_origin[0], scb_origin[1], scb_origin[2], 0, 0, ecef_axis_length, arrow_length_ratio=0.3, color='green')
+ax.text(scb_origin[0] + ecef_axis_length, scb_origin[1], scb_origin[2], 'Xecef', color='red')
+ax.text(scb_origin[0], scb_origin[1] + ecef_axis_length, scb_origin[2], 'Yecef', color='blue')
+ax.text(scb_origin[0], scb_origin[1], scb_origin[2] + ecef_axis_length, 'Zecef', color='green')
 
 '''Euler angles calculations'''
 '''
@@ -249,31 +249,27 @@ ax.text(scb_origin[0] + rotation_about_Xscb[2, 0],
 # print(f"polar_Zscb_for_rotation_about_Xecef: {polar_Zscb_for_rotation_about_Xecef * (180/mt.pi)}")
 
 '''Rotation sequence to point the Xscb axis towards to target latitude and longitutde'''
-Xscb_R_rotation_angle_about_Zscb_R = (target_longitude + 180)*(mt.pi/180) # point in the diametrically opposite direction
-dcm_Xscb_R_rotation_angle_about_Zscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Zscb_R), -mt.sin(Xscb_R_rotation_angle_about_Zscb_R), 0],
-                                             [mt.sin(Xscb_R_rotation_angle_about_Zscb_R), mt.cos(Xscb_R_rotation_angle_about_Zscb_R), 0],
-                                             [0, 0, 1]])
-rotation_about_Zscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Zscb_R, rotation_about_Xscb.T)).T
-ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-          rotation_about_Zscb_R[:, 0], rotation_about_Zscb_R[:, 1], rotation_about_Zscb_R[:, 2],
-          arrow_length_ratio=0.4, linestyle="--",
-          color=['red', 'blue', 'green'])
-print(f"Xscb_R_rotation_angle_about_Zscb_R: {Xscb_R_rotation_angle_about_Zscb_R}")
-
 Xscb_R_rotation_angle_about_Yscb_R = (target_latitude)*(mt.pi/180) # point in the diametrically opposite direction
 dcm_Xscb_R_rotation_angle_about_Yscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.sin(Xscb_R_rotation_angle_about_Yscb_R)],
                                                    [0, 1, 0],
                                                    [-mt.sin(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.cos(Xscb_R_rotation_angle_about_Yscb_R)]])
-
-rotation_about_Yscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Yscb_R, rotation_about_Zscb_R.T)).T
-
+rotation_about_Yscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Yscb_R, rotation_about_Xscb.T)).T
 ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
           rotation_about_Yscb_R[:, 0], rotation_about_Yscb_R[:, 1], rotation_about_Yscb_R[:, 2],
           arrow_length_ratio=0.4, linestyle="-.",
           color=['red', 'blue', 'green'])
-print(f"Xscb_R_rotation_angle_about_Yscb_R: {Xscb_R_rotation_angle_about_Yscb_R}")
+print(f"Xscb_R_rotation_angle_about_Yscb_R: {Xscb_R_rotation_angle_about_Yscb_R*(180/mt.pi)}")
 
-# given a randomly oriented reference frame, how can we  rotate it about it Y axis?
+Xscb_R_rotation_angle_about_Zscb_R = (target_longitude + 180)*(mt.pi/180) # point in the diametrically opposite direction
+dcm_Xscb_R_rotation_angle_about_Zscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Zscb_R), -mt.sin(Xscb_R_rotation_angle_about_Zscb_R), 0],
+                                                   [mt.sin(Xscb_R_rotation_angle_about_Zscb_R), mt.cos(Xscb_R_rotation_angle_about_Zscb_R), 0],
+                                                   [0, 0, 1]])
+rotation_about_Zscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Zscb_R, rotation_about_Yscb_R.T)).T
+ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+          rotation_about_Zscb_R[:, 0], rotation_about_Zscb_R[:, 1], rotation_about_Zscb_R[:, 2],
+          arrow_length_ratio=0.4, linestyle="--",
+          color=['red', 'blue', 'green'])
+print(f"Xscb_R_rotation_angle_about_Zscb_R: {Xscb_R_rotation_angle_about_Zscb_R*(180/mt.pi)}")
 
 '''display chart'''
 plt.show()
