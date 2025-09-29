@@ -24,9 +24,9 @@ import cartopy.feature as cfeature
 import random as rd
 from scipy.spatial.transform import Rotation as R
 
-'''user input lat-long'''
-target_latitude = 34.0467 #float(input('Enter the latitude value in degrees between -90 and 90'))
-target_longitude = -118.5464 #float(input('Enter the longitude value in degrees between -180 and 180'))
+'''user input lat-long''' # 34.0467° N, 118.5464° W
+target_latitude = 34.0467 # float(input('Enter the latitude value in degrees between -90 and 90'))
+target_longitude = -118.5464 # float(input('Enter the longitude value in degrees between -180 and 180'))
 
 '''plot all points on Earth'''
 ax = plt.figure(figsize=(7, 7)).add_subplot(111, projection="3d")
@@ -104,7 +104,7 @@ ax.plot_surface(x_data_sat, y_data_sat, z_data_sat, color='white', alpha=0.15)
 ax.quiver(0, 0, 0, 
           ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[0], 
           ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[1], 
-          ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2], arrow_length_ratio=0.2, color='black')
+          ut.spherical_to_cartesian(radius_sat_orbit, target_latitude, target_longitude)[2], arrow_length_ratio=0.2, color='black', linestyle="--")
 
 # '''plot a randomly / specifically oriented cubesat at the LEO above the fire prone area'''
 scb_axis_length = 0.75 * radius_earth
@@ -269,33 +269,59 @@ rotation_about_Xscb = np.array(np.matmul(dcm_rotation_abt_Xscb, rotation_about_Y
 #         scb_origin[2] + rotation_about_Xscb[2, 2], 
 #         'Zscb_Xrot', color='green')
 
-# # print(" ") # These angles are output of the ADCS algorithm
-# # print(f"azim_rotation_of_Xscb: {azim_rotation_of_Xscb * (180/mt.pi)}")
-# # print(f"elev_rotation_of_Xscb: {elev_rotation_of_Xscb * (180/mt.pi)}")
-# # print(f"polar_Zscb_for_rotation_about_Xecef: {polar_Zscb_for_rotation_about_Xecef * (180/mt.pi)}")
-
 # '''Rotation sequence to point the Xscb axis towards to target latitude and longitutde'''
-# Xscb_R_rotation_angle_about_Yscb_R = (target_latitude)*(mt.pi/180) # point in the diametrically opposite direction
-# dcm_Xscb_R_rotation_angle_about_Yscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.sin(Xscb_R_rotation_angle_about_Yscb_R)],
-#                                                   [0, 1, 0],
-#                                                   [-mt.sin(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.cos(Xscb_R_rotation_angle_about_Yscb_R)]])
-# rotation_about_Yscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Yscb_R, rotation_about_Xscb.T)).T
+Xscb_R_rotation_angle_about_Yscb_R = (target_latitude)*(mt.pi/180) # point in the diametrically opposite direction
+dcm_Xscb_R_rotation_angle_about_Yscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.sin(Xscb_R_rotation_angle_about_Yscb_R)],
+                                                  [0, 1, 0],
+                                                  [-mt.sin(Xscb_R_rotation_angle_about_Yscb_R), 0, mt.cos(Xscb_R_rotation_angle_about_Yscb_R)]])
+rotation_about_Yscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Yscb_R, rotation_about_Xscb.T)).T
 # ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
 #           rotation_about_Yscb_R[:, 0], rotation_about_Yscb_R[:, 1], rotation_about_Yscb_R[:, 2],
 #           arrow_length_ratio=0.4, linestyle="-.",
 #           color=['red', 'blue', 'green'])
-# print(f"Xscb_R_rotation_angle_about_Yscb_R: {Xscb_R_rotation_angle_about_Yscb_R*(180/mt.pi)}")
+# ax.text(scb_origin[0] + rotation_about_Yscb_R[0, 0], 
+#         scb_origin[1] + rotation_about_Yscb_R[0, 1], 
+#         scb_origin[2] + rotation_about_Yscb_R[0, 2], 
+#         'Xscb_rotA', color='red')
+# ax.text(scb_origin[0] + rotation_about_Yscb_R[1, 0], 
+#         scb_origin[1] + rotation_about_Yscb_R[1, 1], 
+#         scb_origin[2] + rotation_about_Yscb_R[1, 2], 
+#         'Yscb_rotA', color='blue')
+# ax.text(scb_origin[0] + rotation_about_Yscb_R[2, 0], 
+#         scb_origin[1] + rotation_about_Yscb_R[2, 1], 
+#         scb_origin[2] + rotation_about_Yscb_R[2, 2], 
+#         'Zscb_rotA', color='green')
 
-# Xscb_R_rotation_angle_about_Zscb_R = (target_longitude + 180)*(mt.pi/180) # point in the diametrically opposite direction
-# dcm_Xscb_R_rotation_angle_about_Zscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Zscb_R), -mt.sin(Xscb_R_rotation_angle_about_Zscb_R), 0],
-#                                                   [mt.sin(Xscb_R_rotation_angle_about_Zscb_R), mt.cos(Xscb_R_rotation_angle_about_Zscb_R), 0],
-#                                                   [0, 0, 1]])
-# rotation_about_Zscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Zscb_R, rotation_about_Yscb_R.T)).T
-# ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
-#           rotation_about_Zscb_R[:, 0], rotation_about_Zscb_R[:, 1], rotation_about_Zscb_R[:, 2],
-#           arrow_length_ratio=0.4, linestyle="--",
-#           color=['red', 'blue', 'green'])
-# print(f"Xscb_R_rotation_angle_about_Zscb_R: {Xscb_R_rotation_angle_about_Zscb_R*(180/mt.pi)}")
+
+Xscb_R_rotation_angle_about_Zscb_R = (target_longitude + 180)*(mt.pi/180) # point in the diametrically opposite direction
+dcm_Xscb_R_rotation_angle_about_Zscb_R = np.array([[mt.cos(Xscb_R_rotation_angle_about_Zscb_R), -mt.sin(Xscb_R_rotation_angle_about_Zscb_R), 0],
+                                                  [mt.sin(Xscb_R_rotation_angle_about_Zscb_R), mt.cos(Xscb_R_rotation_angle_about_Zscb_R), 0],
+                                                  [0, 0, 1]])
+rotation_about_Zscb_R = np.array(np.matmul(dcm_Xscb_R_rotation_angle_about_Zscb_R, rotation_about_Yscb_R.T)).T
+ax.quiver(scb_ref_frame_start[:, 0], scb_ref_frame_start[:, 1], scb_ref_frame_start[:, 2], 
+          rotation_about_Zscb_R[:, 0], rotation_about_Zscb_R[:, 1], rotation_about_Zscb_R[:, 2],
+          arrow_length_ratio=0.4, linestyle="-",
+          color=['red', 'blue', 'green'])
+ax.text(scb_origin[0] + rotation_about_Zscb_R[0, 0], 
+        scb_origin[1] + rotation_about_Zscb_R[0, 1], 
+        scb_origin[2] + rotation_about_Zscb_R[0, 2], 
+        'Xscb_rotB', color='red')
+ax.text(scb_origin[0] + rotation_about_Zscb_R[1, 0], 
+        scb_origin[1] + rotation_about_Zscb_R[1, 1], 
+        scb_origin[2] + rotation_about_Zscb_R[1, 2], 
+        'Yscb_rotB', color='blue')
+ax.text(scb_origin[0] + rotation_about_Zscb_R[2, 0], 
+        scb_origin[1] + rotation_about_Zscb_R[2, 1], 
+        scb_origin[2] + rotation_about_Zscb_R[2, 2], 
+        'Zscb_rotB', color='green')
+
+
+
+print(f"Step 1: azim_rotation_of_Xscb: {azim_rotation_of_Xscb * (180/mt.pi)}") # angle used in step 1
+print(f"Step 2: elev_rotation_of_Xscb: {elev_rotation_of_Xscb * (180/mt.pi)}") # angle used in step 2
+print(f"Step 3: polar_Zscb_for_rotation_about_Xecef: {polar_Zscb_for_rotation_about_Xecef * (180/mt.pi)}") # angle used in step 3
+print(f"Step A: Xscb_R_rotation_angle_about_Yscb_R: {Xscb_R_rotation_angle_about_Yscb_R*(180/mt.pi)}") # angle used in step A
+print(f"Step B: Xscb_R_rotation_angle_about_Zscb_R: {Xscb_R_rotation_angle_about_Zscb_R*(180/mt.pi)}") # angle used in step B
 
 '''display chart'''
 plt.show()
