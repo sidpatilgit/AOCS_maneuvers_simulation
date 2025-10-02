@@ -1,8 +1,9 @@
 '''
-Goal of this algorithm is to take the target location on Earth from the user as input and generate the rotation sequence required nadir pointing attitude.
+Goal of this algorithm is to take the target location on Earth from the user as input,
+and generate the rotation sequence required to point the camera of a randomly oriented satellite in LEO at the target location.
 
 1. Ask the user for latitude and longitude data for the location of interest.
-2. Assume a random orientation of the satellite in LEO and at a random location of the LEO.
+2. Assume a random orientation of the satellite in LEO and at a random location in the LEO.
 3. Optimal trajectory determination to go from the random location to target location in LEO.
 4. Once at LEO target location, perform the rotation sequence to align the randomly oriented SCB with ECEF.
 5. Perform the rotation sequence to point the camera / instrument axis towards the target.
